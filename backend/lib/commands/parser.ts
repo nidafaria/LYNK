@@ -1,12 +1,13 @@
-// Natural language command parser for LYNK
-// Converts Telegram messages into escrow protocol actions
-
+// backend/lib/commands/parser.ts
 type CommandType =
   | "BUY"
   | "RELEASE"
   | "DISPUTE"
   | "TRACK"
   | "BALANCE"
+  | "DEPOSIT"
+  | "MY_DEALS"
+  | "HELP"
   | "UNKNOWN";
 
 export interface ParsedCommand {
@@ -14,217 +15,143 @@ export interface ParsedCommand {
   originalMessage: string;
   normalizedMessage: string;
   confidence: number;
+  amount?: number;           // NEW: parsed amount for BUY/DEPOSIT
+  trackingId?: string;       // NEW: parsed tracking number
+  disputeReason?: string;     // NEW: parsed dispute reason
   metadata: {
-    trackingId?: string;
     intentHints?: string[];
   };
 }
 
-// --- Normalize Input ---
-
 function normalize(input: string): string {
-  return input
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ");
+  if (!input || typeof input !== 'string') return '';
+  return input.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
-// --- Exact Keyword Matching ---
-
-function containsAny(
-  text: string,
-  keywords: string[]
-): boolean {
+function containsAny(text: string, keywords: string[]): boolean {
+  if (!text) return false;
   const words = text.split(" ");
-
-  return keywords.some((keyword) => {
-    return (
-      text === keyword ||
-      words.includes(keyword)
-    );
-  });
+  return keywords.some(keyword => text === keyword || words.includes(keyword));
 }
 
-// --- Tracking Extraction ---
+// Extract amount from message (e.g., "BUY 25" or "DEPOSIT 10")
+function extractAmount(text: string): number | undefined {
+  const match = text.match(/(\d+(?:\.\d+)?)/);
+  if (match) {
+    return parseFloat(match[1]);
+  }
+  return undefined;
+}
 
-function extractTrackingId(
-  text: string
-): string | undefined {
-  const match = text.match(
-    /\btrack(?:ing)?\s*(?:number\s*)?(\w{4,})\b/i
-  );
-
+// Extract tracking number
+function extractTrackingId(text: string): string | undefined {
+  const match = text.match(/track(?:\s*#?)?\s*(\w{4,})/i);
   return match?.[1];
 }
 
-// --- Main Parser ---
+// Extract dispute reason (everything after "dispute")
+function extractDisputeReason(text: string): string {
+  const match = text.match(/dispute\s+(.+)/i);
+  return match?.[1]?.trim() || "No reason provided";
+}
 
-export function parseCommand(
-  message: string
-): ParsedCommand {
+export function parseCommand(message: string): ParsedCommand {
+  if (!message || typeof message !== 'string' || message.trim() === '') {
+    return {
+      type: "UNKNOWN",
+      originalMessage: "",
+      normalizedMessage: "",
+      confidence: 0,
+      metadata: {},
+    };
+  }
 
   const originalMessage = message;
+  const normalizedMessage = normalize(message);
 
-  const normalizedMessage =
-    normalize(message);
+  console.log("[parser] incoming", { originalMessage, normalizedMessage });
 
-  console.log(
-    "[parser] incoming",
-    {
-      originalMessage,
-      normalizedMessage,
-    }
-  );
-
-  // --- Intent Keywords ---
-
-  const releaseHints = [
-    "ok",
-    "confirm",
-    "confirmed",
-    "release",
-    "received",
-  ];
-
-  const disputeHints = [
-    "dispute",
-    "problem",
-    "issue",
-    "refund",
-  ];
-
-  const buyHints = [
-    "buy",
-    "purchase",
-  ];
-
-  const trackHints = [
-    "track",
-    "tracking",
-  ];
-
-  const balanceHints = [
-    "balance",
-    "wallet",
-    "funds",
-  ];
-
-  // --- Defaults ---
+  const releaseHints = ["ok", "confirm", "confirmed", "release", "received", "good"];
+  const disputeHints = ["dispute", "problem", "issue", "refund", "wrong"];
+  const buyHints = ["buy", "purchase"];
+  const trackHints = ["track", "tracking"];
+  const balanceHints = ["balance", "wallet", "funds"];
+  const depositHints = ["deposit", "add funds", "top up"];
+  const myDealsHints = ["my deals", "mydeals", "deals", "history","my_deals"];
+  const helpHints = ["help", "/start", "start"];
 
   let type: CommandType = "UNKNOWN";
-
   let confidence = 0.2;
-
+  let amount: number | undefined;
+  let trackingId: string | undefined;
+  let disputeReason: string | undefined;
   const intentHints: string[] = [];
 
-  // --- RELEASE FIRST ---
+  // CHECK ORDER MATTERS - most specific first
 
-  if (
-    containsAny(
-      normalizedMessage,
-      releaseHints
-    )
-  ) {
-    type = "RELEASE";
-
+  // HELP
+  if (containsAny(normalizedMessage, helpHints)) {
+    type = "HELP";
     confidence = 0.95;
-
+    intentHints.push("help");
+  }
+  // MY_DEALS
+  else if (containsAny(normalizedMessage, myDealsHints)) {
+    type = "MY_DEALS";
+    confidence = 0.95;
+    intentHints.push("my_deals");
+  }
+  // DEPOSIT (with amount)
+  else if (containsAny(normalizedMessage, depositHints)) {
+    type = "DEPOSIT";
+    confidence = 0.9;
+    amount = extractAmount(originalMessage) || 10;
+    intentHints.push("deposit");
+  }
+  // RELEASE (OK/confirm)
+  else if (containsAny(normalizedMessage, releaseHints)) {
+    type = "RELEASE";
+    confidence = 0.95;
     intentHints.push("release");
   }
-
-  // --- DISPUTE ---
-
-  else if (
-    containsAny(
-      normalizedMessage,
-      disputeHints
-    )
-  ) {
+  // DISPUTE
+  else if (containsAny(normalizedMessage, disputeHints)) {
     type = "DISPUTE";
-
     confidence = 0.9;
-
+    disputeReason = extractDisputeReason(originalMessage);
     intentHints.push("dispute");
   }
-
-  // --- BUY ---
-
-  else if (
-    containsAny(
-      normalizedMessage,
-      buyHints
-    )
-  ) {
+  // BUY (with optional amount)
+  else if (containsAny(normalizedMessage, buyHints)) {
     type = "BUY";
-
     confidence = 0.9;
-
+    amount = extractAmount(originalMessage);
     intentHints.push("buy");
   }
-
-  // --- TRACK ---
-
-  else if (
-    containsAny(
-      normalizedMessage,
-      trackHints
-    )
-  ) {
+  // TRACK
+  else if (containsAny(normalizedMessage, trackHints)) {
     type = "TRACK";
-
     confidence = 0.75;
-
+    trackingId = extractTrackingId(originalMessage);
     intentHints.push("track");
   }
-
-  // --- BALANCE ---
-
-  else if (
-    containsAny(
-      normalizedMessage,
-      balanceHints
-    )
-  ) {
+  // BALANCE
+  else if (containsAny(normalizedMessage, balanceHints)) {
     type = "BALANCE";
-
     confidence = 0.75;
-
     intentHints.push("balance");
   }
 
-  // --- Tracking Metadata ---
-
-  const trackingId =
-    type === "TRACK"
-      ? extractTrackingId(
-          normalizedMessage
-        )
-      : undefined;
-
-  // --- FINAL DEBUG LOG ---
-
-  console.log(
-    "[parser FINAL TYPE]",
-    type
-  );
-
-  console.log(
-    "[parser] parsed",
-    {
-      type,
-      confidence,
-      trackingId,
-    }
-  );
+  console.log("[parser] result", { type, confidence, amount, trackingId, disputeReason });
 
   return {
     type,
     originalMessage,
     normalizedMessage,
     confidence,
-    metadata: {
-      trackingId,
-      intentHints,
-    },
+    amount,
+    trackingId,
+    disputeReason,
+    metadata: { intentHints },
   };
 }
