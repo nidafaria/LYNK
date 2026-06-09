@@ -6,6 +6,17 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
+/**
+ * Strip markdown code fences from a Groq response.
+ * Handles:
+ *   ```json\n{...}\n```
+ *   ```\n{...}\n```
+ * Falls through if no fences are present.
+ */
+function stripMarkdownFences(raw: string): string {
+  return raw.replace(/^\s*```(?:json)?\s*\n?/i, '').replace(/\n?\s*```\s*$/i, '');
+}
+
 export interface DisputeCase {
   dealId: string;
   buyerMessage: string;
@@ -88,25 +99,35 @@ Return ONLY a JSON object with these fields:
       max_tokens: 300,
     });
 
-    const content = response.choices[0]?.message?.content || '{"ruling": "SPLIT", "confidence": 0.5, "reasoning": "Unable to determine"}';
-    
+    const rawContent = response.choices[0]?.message?.content || '';
+    console.log(`[AI] Raw response:\n${rawContent}`);
+
+    // Strip markdown code fences (```json ... ``` or ``` ... ```)
+    const cleaned = stripMarkdownFences(rawContent);
+    console.log(`[AI] Cleaned response:\n${cleaned}`);
+
     // Parse JSON response
     let result;
+    let parseSuccess = false;
     try {
-      result = JSON.parse(content);
+      result = JSON.parse(cleaned);
+      parseSuccess = true;
+      console.log('[AI] JSON parse succeeded');
     } catch {
-      // If response isn't pure JSON, extract ruling from text
-      const text = content.toLowerCase();
-      if (text.includes('buyer_wins')) result = { ruling: 'BUYER_WINS', confidence: 0.7, reasoning: content };
-      else if (text.includes('seller_wins')) result = { ruling: 'SELLER_WINS', confidence: 0.7, reasoning: content };
-      else result = { ruling: 'SPLIT', confidence: 0.5, reasoning: content };
+      console.warn('[AI] JSON parse failed — falling back to keyword extraction');
+      // If stripped content also isn't pure JSON, try extracting from raw content
+      const text = rawContent.toLowerCase();
+      if (text.includes('buyer_wins')) result = { ruling: 'BUYER_WINS', confidence: 0.7, reasoning: rawContent };
+      else if (text.includes('seller_wins')) result = { ruling: 'SELLER_WINS', confidence: 0.7, reasoning: rawContent };
+      else result = { ruling: 'SPLIT', confidence: 0.5, reasoning: rawContent };
     }
 
-    console.log(`[AI] Ruling: ${result.ruling}, Confidence: ${result.confidence}`);
+    console.log(`[AI] Ruling: ${result.ruling}, Confidence: ${result.confidence} (parseSuccess: ${parseSuccess})`);
     return {
       ruling: result.ruling as Ruling,
-      confidence: result.confidence || 0.7,
-      reasoning: result.reasoning || 'AI analysis complete',
+      // Use nullish coalescing: preserve 0, only fallback on null/undefined
+      confidence: result.confidence ?? 0.7,
+      reasoning: result.reasoning ?? 'AI analysis complete',
     };
   } catch (error) {
     console.error('[AI] Groq error:', error);

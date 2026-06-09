@@ -1,32 +1,59 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
+import { PulseDot, usePerf } from "@/components/animations";
 
 interface StatusCardProps {
-	title: string;
-	status?: "ok" | "warn" | "error" | "idle";
-	hint?: string;
-	children?: ReactNode;
+  title: string;
+  status?: "ok" | "warn" | "error" | "idle" | "loading";
+  hint?: string;
+  children?: ReactNode;
+  className?: string;
 }
 
-const STATUS_STYLES: Record<NonNullable<StatusCardProps["status"]>, string> = {
-	ok: "bg-emerald-400/20 text-emerald-300 border-emerald-400/40",
-	warn: "bg-amber-400/20 text-amber-300 border-amber-400/40",
-	error: "bg-rose-400/20 text-rose-300 border-rose-400/40",
-	idle: "bg-zinc-400/20 text-zinc-200 border-zinc-400/40",
+const BADGE_CLASS: Record<string, string> = {
+  ok:      "badge badge-live",
+  warn:    "badge badge-warn",
+  error:   "badge badge-error",
+  idle:    "badge badge-idle",
+  loading: "badge badge-idle",
+};
+const BADGE_LABEL: Record<string, string> = {
+  ok:      "LIVE",
+  warn:    "WARN",
+  error:   "ERROR",
+  idle:    "IDLE",
+  loading: "SYNC",
+};
+const DOT_COLOR: Record<string, string> = {
+  ok:      "var(--success)",
+  warn:    "var(--warning)",
+  error:   "var(--danger)",
+  idle:    "var(--text-muted)",
+  loading: "var(--text-muted)",
 };
 
-export default function StatusCard({ title, status = "idle", hint, children }: StatusCardProps) {
-	return (
-		<div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]">
-			<div className="flex items-start justify-between gap-4">
-				<div>
-					<h3 className="text-sm uppercase tracking-[0.2em] text-white/60">{title}</h3>
-					{hint ? <p className="mt-2 text-sm text-white/70">{hint}</p> : null}
-				</div>
-				<div className={`rounded-full border px-3 py-1 text-xs font-semibold ${STATUS_STYLES[status]}`}>
-					{status.toUpperCase()}
-				</div>
-			</div>
-			{children ? <div className="mt-4 text-sm text-white/80">{children}</div> : null}
-		</div>
-	);
+export default function StatusCard({ title, status = "idle", hint, children, className = "" }: StatusCardProps) {
+  const perf = usePerf();
+
+  return (
+    <motion.div
+      className={`card p-4 ${className}`}
+      whileHover={perf !== "minimal" ? { y: -2, boxShadow: "0 8px 24px rgba(0,0,0,0.25)" } : {}}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <PulseDot color={DOT_COLOR[status]} size={6} animating={status === "loading" || status === "ok"} />
+            <h3 className="text-[11px] font-medium text-[var(--text-secondary)]">{title}</h3>
+          </div>
+          {hint && <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">{hint}</p>}
+        </div>
+        <span className={BADGE_CLASS[status]}>{BADGE_LABEL[status]}</span>
+      </div>
+      {children && <div className="mt-3">{children}</div>}
+    </motion.div>
+  );
 }

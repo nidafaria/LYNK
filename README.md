@@ -7,7 +7,6 @@ LYNK combines a smart contract escrow, a Telegram bot/webhook orchestrator, and 
 ---
 
 ## Highlights
-
 - Live escrow state from the deployed smart contract
 - Telegram webhook -> blockchain transactions (BUY, RELEASE, DISPUTE)
 - Telemetry layer for bot activity, commands, and status

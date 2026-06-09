@@ -10,6 +10,9 @@ export interface Deal {
   trackingNumber: string | null;
   disputeReason?: string;
   disputeRuling?: string;
+  disputeConfidence?: number;
+  disputeReasoning?: string;
+  resolvedAt?: string | null;
 }
 
 function generateDealId(): string {
@@ -72,6 +75,9 @@ export async function getActiveDealForUser(telegramId: number): Promise<Deal | n
     trackingNumber: data.tracking_number,
     disputeReason: data.dispute_reason,
     disputeRuling: data.dispute_ruling,
+    disputeConfidence: data.dispute_confidence,
+    disputeReasoning: data.dispute_reasoning,
+    resolvedAt: data.resolved_at,
   };
 }
 
@@ -91,6 +97,11 @@ export async function getUserDeals(telegramId: number): Promise<Deal[]> {
     status: d.status,
     contractAddress: d.contract_address,
     trackingNumber: d.tracking_number,
+    disputeReason: d.dispute_reason,
+    disputeRuling: d.dispute_ruling,
+    disputeConfidence: d.dispute_confidence,
+    disputeReasoning: d.dispute_reasoning,
+    resolvedAt: d.resolved_at,
   }));
 }
 
@@ -127,10 +138,22 @@ export async function openDispute(dealId: string, reason: string): Promise<void>
 }
 
 // Resolve dispute
-export async function resolveDispute(dealId: string, ruling: 'BUYER' | 'SELLER' | 'SPLIT'): Promise<void> {
+export async function resolveDispute(
+  dealId: string,
+  ruling: 'BUYER' | 'SELLER' | 'SPLIT',
+  confidence: number,
+  reasoning: string
+): Promise<void> {
   await supabase
     .from('deals')
-    .update({ status: 'resolved', dispute_ruling: ruling, updated_at: new Date() })
+    .update({
+      status: 'resolved',
+      dispute_ruling: ruling,
+      dispute_confidence: confidence,
+      dispute_reasoning: reasoning,
+      resolved_at: new Date().toISOString(),
+      updated_at: new Date(),
+    })
     .eq('deal_id', dealId);
 }
 

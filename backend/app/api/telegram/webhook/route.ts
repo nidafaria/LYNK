@@ -151,8 +151,26 @@ export async function POST(req: NextRequest) {
         return new Response('OK', { status: 200 });
       }
       const reason = text.replace(/dispute/i, '').trim() || "No reason";
-      await sendMessage(chatId, `⚖️ Dispute opened: "${reason}"\n🤖 AI analyzing...`);
       
+      // STEP 1: Mark deal as disputed in database
+      await openDispute(activeDeal.dealId, reason);
+      
+      // STEP 2: Trigger on-chain dispute (non-blocking — proceed even if it fails)
+      try {
+        const userWallet = await getUserWallet(telegramId);
+        await disputeWithWallet(userWallet);
+      } catch (chainError: any) {
+        console.warn(`[Webhook] On-chain dispute failed (continuing): ${chainError.message}`);
+      }
+      
+      // STEP 3: Notify user (non-blocking — Telegram may be unreachable in test mode)
+      try {
+        await sendMessage(chatId, `⚖️ Dispute opened: "${reason}"\n🤖 AI analyzing...`);
+      } catch (notifyError: any) {
+        console.warn(`[Webhook] Telegram notify failed (continuing): ${notifyError.message}`);
+      }
+      
+      // STEP 4: AI arbitration
       const { ruling, confidence, reasoning } = await arbitrateDispute({
         dealId: activeDeal.dealId,
         buyerMessage: reason,
@@ -168,8 +186,17 @@ export async function POST(req: NextRequest) {
         case 'SELLER_WINS': dbRuling = 'SELLER'; rulingText = "🏆 SELLER WINS"; break;
         default: dbRuling = 'SPLIT'; rulingText = "🤝 SPLIT 50/50";
       }
-      await resolveDispute(activeDeal.dealId, dbRuling);
-      await sendMarkdownMessage(chatId, `*⚖️ Ruling: ${rulingText}*\nConfidence: ${Math.round(confidence * 100)}%\n${reasoning}`);
+      
+      // STEP 5: Persist ruling to database
+      await resolveDispute(activeDeal.dealId, dbRuling, confidence, reasoning);
+      console.log(`[Webhook] Dispute resolved: ${activeDeal.dealId} -> ${dbRuling} (confidence: ${confidence})`);
+      
+      // STEP 6: Send ruling to user (non-blocking)
+      try {
+        await sendMarkdownMessage(chatId, `*⚖️ Ruling: ${rulingText}*\nConfidence: ${Math.round(confidence * 100)}%\n${reasoning}`);
+      } catch (notifyError: any) {
+        console.warn(`[Webhook] Telegram ruling notification failed (dispute persisted): ${notifyError.message}`);
+      }
       return new Response('OK', { status: 200 });
     }
     

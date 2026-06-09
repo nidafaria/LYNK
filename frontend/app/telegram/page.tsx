@@ -1,189 +1,129 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-
-type StatusTone = "ok" | "warn" | "error" | "idle" | "loading";
-
-interface TelegramTelemetry {
-  lastCommand: string | null;
-  lastMessage: string | null;
-  lastUser: string | null;
-  lastTimestamp: number | null;
-  webhookConnected: boolean;
-  botReachable: boolean;
-  totalMessages: number;
-}
-
-interface TelegramStatusResponse {
-  success: boolean;
-  telemetry?: TelegramTelemetry;
-  error?: string;
-}
+import { useEffect, useState } from "react";
+import { FadeIn, StaggerGrid, SectionDivider, MetricTile, PulseDot, HoverCard, MiniDonut } from "@/components/animations";
+import type { TelegramTelemetry, TelegramStatusResponse } from "@/services/api";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
-const STATUS_STYLE: Record<StatusTone, string> = {
-  ok: "bg-emerald-400/20 text-emerald-200 border-emerald-400/40",
-  warn: "bg-amber-400/20 text-amber-200 border-amber-400/40",
-  error: "bg-rose-400/20 text-rose-200 border-rose-400/40",
-  idle: "bg-zinc-400/20 text-zinc-200 border-zinc-400/40",
-  loading: "bg-sky-400/20 text-sky-200 border-sky-400/40",
-};
-
-function formatTimestamp(value?: number | null): string {
-  if (!value) return "-";
-  const date = new Date(value * 1000);
-  if (Number.isNaN(date.getTime())) return "-";
-  return date.toLocaleString();
+function ts(v?: number|null) {
+  if (!v) return "-";
+  const d = new Date(v*1000); return Number.isNaN(d.getTime())?"-":d.toLocaleString();
 }
 
+const activity = [
+  {l:"Mo", v:12}, {l:"Tu", v:8}, {l:"We", v:15},
+  {l:"Th", v:22}, {l:"Fr", v:18}, {l:"Sa", v:5}, {l:"Su", v:3},
+];
+
 export default function TelegramPage() {
-  const [telemetry, setTelemetry] = useState<TelegramTelemetry | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastSync, setLastSync] = useState<string | null>(null);
+  const [t, setT] = useState<TelegramTelemetry|null>(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string|null>(null);
+  const [ls, setLs] = useState<string|null>(null);
 
-  async function refreshTelemetry() {
-    setLoading(true);
-    setError(null);
-    console.log("[telegram] telemetry fetch started");
-
+  async function refresh() {
+    setLoading(true); setErr(null);
     try {
-      const response = await fetch(`${BASE_URL}/api/telegram/status`);
-      const data = (await response.json()) as TelegramStatusResponse;
-
-      if (!response.ok || !data.success || !data.telemetry) {
-        throw new Error(data.error || "Telemetry unavailable");
-      }
-
-      setTelemetry(data.telemetry);
-      setLastSync(new Date().toLocaleTimeString());
-      console.log("[telegram] telemetry fetch success", data.telemetry);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message);
-      setTelemetry(null);
-      console.error("[telegram] telemetry fetch failure", err);
-    } finally {
-      setLoading(false);
-    }
+      const r = await fetch(`${BASE_URL}/api/telegram/status`);
+      const d = await r.json() as TelegramStatusResponse;
+      if (!r.ok || !d.success || !d.telemetry) throw new Error(d.error||"Unavailable");
+      setT(d.telemetry); setLs(new Date().toLocaleTimeString());
+    } catch (err:any) { setErr(err.message); setT(null); }
+    finally { setLoading(false); }
   }
 
-  useEffect(() => {
-    refreshTelemetry();
-    const timer = setInterval(refreshTelemetry, 10000);
-    return () => clearInterval(timer);
-  }, []);
+  useEffect(() => { refresh(); const t = setInterval(refresh,10000); return ()=>clearInterval(t); }, []);
 
-  const statusTone: StatusTone = loading
-    ? "loading"
-    : telemetry
-      ? "ok"
-      : "error";
-
-  const badgeLabel = loading ? "SYNCING" : telemetry ? "LIVE" : "ERROR";
-
-  const botStatus = useMemo<StatusTone>(() => {
-    if (loading) return "loading";
-    if (!telemetry) return "error";
-    return telemetry.botReachable ? "ok" : "warn";
-  }, [loading, telemetry]);
-
-  const webhookStatus = useMemo<StatusTone>(() => {
-    if (loading) return "loading";
-    if (!telemetry) return "error";
-    return telemetry.webhookConnected ? "ok" : "warn";
-  }, [loading, telemetry]);
+  const maxV = Math.max(...activity.map(x=>x.v), 1);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-white/50">Telegram Control</p>
-        <h2 className="mt-3 text-2xl font-semibold">Bot + Webhook Monitoring</h2>
-        <p className="mt-2 text-sm text-white/60">
-          Observe webhook delivery, parser output, and live command flow.
-        </p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h3 className="text-sm uppercase tracking-[0.2em] text-white/60">Telemetry Status</h3>
-              <p className="mt-2 text-sm text-white/70">Live signal from Telegram webhook.</p>
-            </div>
-            <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${STATUS_STYLE[statusTone]}`}>
-              {badgeLabel}
-            </span>
+    <div className="flex flex-col gap-6">
+      <FadeIn>
+        <div className="card-premium p-5">
+          <div className="flex items-center gap-2 mb-2">
+            <PulseDot color={t?"var(--success)":"var(--text-muted)"} size={7} />
+            <span className="badge badge-live">Telemetry</span>
           </div>
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">Bot + Webhook Monitoring</h2>
+          <p className="text-sm text-[var(--text-tertiary)] mt-1">Webhook delivery, parser output, and live command flow.</p>
+        </div>
+      </FadeIn>
 
-          <div className="mt-4 space-y-3 text-sm text-white/80">
-            <div className="flex items-center justify-between">
-              <span className="text-white/60">Last Command</span>
-              <span className="font-mono text-white">{telemetry?.lastCommand ?? "-"}</span>
+      <StaggerGrid className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <MetricTile label="Webhook" value={loading?"...":t?.webhookConnected?"Connected":"Pending"} subtitle={t?.webhookConnected?"Receiving":"Awaiting"} color="#22c55e" />
+        <MetricTile label="Bot" value={loading?"...":t?.botReachable?"Online":"Offline"} subtitle={t?.botReachable?"Responding":"Unreachable"} color={t?.botReachable?"#22c55e":"#ef4444"} />
+        <MetricTile label="Messages" value={t?.totalMessages??0} subtitle="Total received" color="#3b82f6" />
+        <MetricTile label="Status" value={t?"Streaming":"Idle"} subtitle={ls?`Sync: ${ls}`:""} color="#f59e0b" />
+      </StaggerGrid>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <HoverCard className="card p-4">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Telemetry Feed</div>
+              <div className="text-[11px] text-[var(--text-tertiary)]">Live webhook signal</div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-white/60">Last User</span>
-              <span className="font-mono text-white">{telemetry?.lastUser ?? "-"}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-white/60">Last Message</span>
-              <span className="font-mono text-white">
-                {telemetry?.lastMessage ? `${telemetry.lastMessage.slice(0, 22)}${telemetry.lastMessage.length > 22 ? "..." : ""}` : "-"}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-white/60">Last Timestamp</span>
-              <span className="font-mono text-white">{formatTimestamp(telemetry?.lastTimestamp)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-white/60">Total Messages</span>
-              <span className="font-mono text-white">{telemetry?.totalMessages ?? 0}</span>
-            </div>
-            {error ? (
-              <div className="rounded-lg border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
-                {error}
+            <PulseDot color={t?"var(--success)":"var(--text-muted)"} size={7} />
+          </div>
+          <div className="space-y-2">
+            {[["Command",t?.lastCommand??"—"],["User",t?.lastUser??"—"],["Message",t?.lastMessage?`${t.lastMessage.slice(0,22)}${t.lastMessage.length>22?"...":""}`:"—"],["Timestamp",ts(t?.lastTimestamp)]].map(([l,v])=>(
+              <div key={l} className="flex justify-between py-1.5 border-b border-[var(--border-subtle)] last:border-0">
+                <span className="text-[11px] text-[var(--text-tertiary)]">{l}</span>
+                <span className="font-mono text-[11px] text-[var(--text-secondary)] truncate max-w-[200px]">{v}</span>
               </div>
-            ) : null}
-            {lastSync ? <div className="text-xs text-white/40">Last sync: {lastSync}</div> : null}
+            ))}
           </div>
-        </div>
+          {err && <div className="mt-2 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[11px] text-[var(--danger)]">{err}</div>}
+        </HoverCard>
 
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <div className="flex items-start justify-between gap-4">
+        <HoverCard className="card p-4">
+          <div className="mb-3">
+            <div className="text-[11px] font-medium text-[var(--text-secondary)]">Connectivity</div>
+            <div className="text-[11px] text-[var(--text-tertiary)]">Connection checks</div>
+          </div>
+          <div className="flex flex-col gap-2">
+            {[
+              {label:"Webhook", value:t?.webhookConnected?"CONNECTED":"PENDING", ok:!!t?.webhookConnected},
+              {label:"Bot Reachable", value:t?.botReachable?"LIVE":"OFFLINE", ok:!!t?.botReachable},
+              {label:"Health", value:t?"Streaming":"Idle", ok:!!t},
+            ].map(({label, value, ok}) => (
+              <div key={label} className="flex items-center justify-between p-2.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
+                <span className="text-[11px] text-[var(--text-tertiary)]">{label}</span>
+                <span className={`flex items-center gap-1.5 text-[11px] ${ok?"text-[var(--success)]":"text-[var(--warning)]"}`}>
+                  <PulseDot color={ok?"var(--success)":"var(--warning)"} size={6} />
+                  {loading?"CHECKING":value}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 pt-3 border-t border-[var(--border-subtle)] flex items-center gap-3">
+            <MiniDonut value={t?.totalMessages?Math.min(t.totalMessages,100):0} max={100} size={30} strokeWidth={2.5} color="#22c55e" label={String(t?.totalMessages??0)} />
             <div>
-              <h3 className="text-sm uppercase tracking-[0.2em] text-white/60">Bot Connectivity</h3>
-              <p className="mt-2 text-sm text-white/70">Runtime connectivity checks.</p>
+              <div className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider">Activity Level</div>
+              <div className="text-[11px] text-[var(--text-secondary)]">{t?.totalMessages?`${t.totalMessages} messages`:"No activity"}</div>
             </div>
           </div>
+        </HoverCard>
+      </div>
 
-          <div className="mt-4 space-y-3 text-sm text-white/80">
-            <div className="flex items-center justify-between">
-              <span className="text-white/60">Webhook</span>
-              <span className={`rounded-full border px-3 py-1 text-xs ${STATUS_STYLE[webhookStatus]}`}>
-                {loading ? "SYNCING" : telemetry?.webhookConnected ? "CONNECTED" : "PENDING"}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-white/60">Bot Reachable</span>
-              <span className={`rounded-full border px-3 py-1 text-xs ${STATUS_STYLE[botStatus]}`}>
-                {loading ? "SYNCING" : telemetry?.botReachable ? "LIVE" : "OFFLINE"}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-white/60">Telemetry Health</span>
-              <span className="font-mono text-white">{telemetry ? "Streaming" : "Idle"}</span>
-            </div>
-          </div>
+      <SectionDivider />
+
+      <HoverCard className="card p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-[11px] font-medium text-[var(--text-secondary)]">Activity Feed</span>
+          {t && <PulseDot color="var(--accent)" size={6} />}
         </div>
-      </div>
-
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-        <h3 className="text-sm uppercase tracking-[0.2em] text-white/60">Activity Feed</h3>
-        <p className="mt-3 text-sm text-white/70">
-          {telemetry ? "Live telemetry captured from the Telegram webhook." : "Awaiting live Telegram events."}
-        </p>
-      </div>
+        <div className="text-[11px] text-[var(--text-tertiary)] mb-4">{t?"Live telemetry captured.":"Awaiting live events."}</div>
+        <div className="flex items-end gap-2 h-20">
+          {activity.map((d) => (
+            <div key={d.l} className="flex-1 flex flex-col items-center gap-1">
+              <div className="w-full rounded-t-sm bg-[#5b5bd7] opacity-40" style={{height:`${(d.v/maxV)*64}px`, transition:"height 0.6s ease"}} />
+              <span className="text-[8px] text-[var(--text-tertiary)]">{d.l}</span>
+            </div>
+          ))}
+        </div>
+      </HoverCard>
     </div>
   );
 }

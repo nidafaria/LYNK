@@ -2,76 +2,133 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import { PulseDot, usePerf } from "@/components/animations";
 
 const NAV_ITEMS = [
-  { label: "Overview", href: "/" },
-  { label: "Escrow Operations", href: "/escrow" },
-  { label: "Blockchain Explorer", href: "/blockchain" },
-  { label: "Telegram Control", href: "/telegram" },
-  { label: "AI Dispute Center", href: "/disputes" },
-  { label: "Developer Tools", href: "/developer" },
+  { label: "Overview",    href: "/",          icon: "◆" },
+  { label: "Escrow Ops",  href: "/escrow",    icon: "●" },
+  { label: "Blockchain",  href: "/blockchain", icon: "◈" },
+  { label: "Telegram",    href: "/telegram",  icon: "◉" },
+  { label: "Disputes",    href: "/disputes",  icon: "◎" },
+  { label: "Developer",   href: "/developer", icon: "◇" },
 ];
+
+
+
+function NavItem({ item, active }: { item: typeof NAV_ITEMS[number]; active: boolean }) {
+  const perf = usePerf();
+  return (
+    <Link href={item.href}>
+      <motion.div
+        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors duration-150 ${
+          active
+            ? "bg-[var(--bg-active)] text-[var(--text-primary)]"
+            : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]"
+        }`}
+        whileHover={perf !== "minimal" ? { x: 2 } : {}}
+        transition={{ duration: 0.12 }}
+      >
+        <span className="w-5 text-center text-xs">{item.icon}</span>
+        <span className="text-xs font-medium">{item.label}</span>
+        {active && (
+          <motion.span
+            className="ml-auto w-1 h-1 rounded-full bg-[var(--accent)]"
+            layoutId="nav-dot"
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          />
+        )}
+      </motion.div>
+    </Link>
+  );
+}
 
 export default function ConsoleShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-ink text-white">
-      <div className="pointer-events-none fixed inset-0 bg-gradient-to-br from-[#0b1220] via-[#0b0f14] to-[#07090c]" />
-      <div className="pointer-events-none fixed inset-0 opacity-60 [background:radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_55%),radial-gradient(circle_at_20%_20%,_rgba(14,165,233,0.15),_transparent_50%),radial-gradient(circle_at_bottom,_rgba(16,185,129,0.12),_transparent_60%)]" />
-
-      <div className="relative mx-auto flex w-full max-w-7xl gap-6 px-6 py-6">
-        <aside className="hidden w-64 flex-col gap-6 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur lg:flex">
-          <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-white/40">Navigation</p>
-            <h2 className="mt-3 text-lg font-semibold text-white">Mission Console</h2>
-          </div>
-          <nav className="flex flex-col gap-2">
-            {NAV_ITEMS.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center justify-between rounded-xl px-4 py-3 text-left text-sm transition ${
-                    active
-                      ? "bg-white/10 text-white"
-                      : "text-white/60 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  <span>{item.label}</span>
-                  <span className="text-xs text-white/40">→</span>
-                </Link>
-              );
-            })}
-          </nav>
-        </aside>
-
-        <div className="flex min-w-0 flex-1 flex-col gap-8">
-          <header className="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+    <div className="min-h-screen bg-[var(--bg-deepest)] flex">
+      {/* ── Sidebar ── */}
+      <aside className="hidden lg:flex w-56 flex-col border-r border-[var(--border-default)] bg-[var(--bg-base)]">
+        <motion.div
+          className="flex flex-col h-full p-4 gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* Logo */}
+          <motion.div
+            className="flex items-center gap-2.5 px-1"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.15 }}
+          >
+            <div className="w-7 h-7 rounded-lg bg-[var(--accent)] flex items-center justify-center">
+              <span className="text-white text-xs font-bold">L</span>
+            </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.5em] text-white/40">LYNK</p>
-              <h1 className="text-2xl font-semibold md:text-3xl">Protocol Mission Control</h1>
-              <p className="mt-2 text-sm text-white/60">
-                Real-time dashboard for backend, blockchain, escrow, and Telegram visibility.
-              </p>
+              <div className="text-sm font-semibold text-[var(--text-primary)]">LYNK</div>
+              <div className="text-[9px] text-[var(--text-tertiary)]">Protocol v0.1</div>
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-sm">
-              <span className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/70">
-                QIE Mainnet
-              </span>
-              <span className="rounded-full border border-emerald-400/40 bg-emerald-400/20 px-4 py-2 text-xs font-semibold text-emerald-200">
-                Backend Connected
-              </span>
-              <span className="rounded-full border border-sky-400/40 bg-sky-400/20 px-4 py-2 text-xs font-semibold text-sky-200">
-                Wallet Active
-              </span>
-            </div>
-          </header>
+          </motion.div>
 
-          {/* Future: elevate live status pills into shared context from backend health */}
-          <main className="flex flex-col gap-8">{children}</main>
-        </div>
+          <div className="divider" />
+
+          {/* Nav */}
+          <motion.nav
+            className="flex flex-col gap-0.5 flex-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ staggerChildren: 0.04 }}
+          >
+            {NAV_ITEMS.map(item => (
+              <motion.div key={item.href} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0, transition: { duration: 0.25 } }}>
+                <NavItem item={item} active={pathname === item.href} />
+              </motion.div>
+            ))}
+          </motion.nav>
+
+          {/* Bottom */}
+          <div className="divider" />
+          <div className="flex items-center gap-2 px-1 py-1">
+            <PulseDot color="var(--success)" size={8} />
+            <span className="text-[10px] text-[var(--text-tertiary)]">All systems nominal</span>
+          </div>
+        </motion.div>
+      </aside>
+
+      {/* ── Main Content ── */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header */}
+        <header className="border-b border-[var(--border-default)] bg-[var(--bg-base)] px-6 py-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-[9px] text-[var(--text-tertiary)] tracking-wider uppercase">LYNK Protocol</div>
+              <h1 className="text-lg font-semibold text-[var(--text-primary)] mt-0.5">Mission Control</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="badge badge-accent">QIE</span>
+              <motion.span
+                className="badge badge-live"
+                animate={{ opacity: [1, 0.6, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                Connected
+              </motion.span>
+            </div>
+          </div>
+        </header>
+
+        {/* Page */}
+        <main className="flex-1 p-6 overflow-y-auto">
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            {children}
+          </motion.div>
+        </main>
       </div>
     </div>
   );
