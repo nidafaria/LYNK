@@ -225,15 +225,12 @@ npx hardhat run scripts/deploy.ts --network qie
 ```bash
 cd backend
 npm install
-cp .env.example .env.local   # Fill in your keys
 npm run dev                   # → http://localhost:3000
 ```
 
-<details>
-<summary><b>Required environment variables</b></summary>
+**Create `backend/.env.local` with:**
 
-```
-# backend/.env.local
+```env
 QIE_RPC_URL=https://rpc.qie.network
 QIE_PRIVATE_KEY=0x...
 QIE_ESCROW_CONTRACT=0x5A871eD6740887f14F31dFB50a4e50486908DfAD
@@ -242,32 +239,28 @@ GROQ_API_KEY=gsk_...
 SUPABASE_URL=https://xxx.supabase.co
 SUPABASE_ANON_KEY=...
 ```
-</details>
 
 ### 3. Frontend
 
 ```bash
 cd frontend
 npm install
-cp .env.example .env.local
 npm run dev                   # → http://localhost:3001
 ```
 
-<details>
-<summary><b>Required environment variables</b></summary>
+**Create `frontend/.env.local` with:**
 
-```
-# frontend/.env.local
+```env
 NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
 NEXT_PUBLIC_QIE_CONTRACT=0x5A871eD6740887f14F31dFB50a4e50486908DfAD
 ```
-</details>
 
 ### 4. Telegram Webhook
 
 ```bash
-curl -F "url=https://your-ngrok.ngrok.app/api/telegram/webhook" \
-  https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook
+# Expose localhost via ngrok, then set the webhook URL
+# curl -F "url=https://your-tunnel.ngrok-free.app/api/telegram/webhook" \
+#   https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook
 ```
 
 ---
