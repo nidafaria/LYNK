@@ -47,9 +47,9 @@ export default function StatusCard({ title, status = "idle", hint, children, cla
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <PulseDot color={DOT_COLOR[status]} size={6} animating={status === "loading" || status === "ok"} />
-            <h3 className="text-[11px] font-medium text-[var(--text-secondary)]">{title}</h3>
+            <h3 className="text-[15px] font-medium text-[var(--text-secondary)]">{title}</h3>
           </div>
-          {hint && <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">{hint}</p>}
+          {hint && <p className="text-[14px] text-[var(--text-tertiary)] mt-0.5">{hint}</p>}
         </div>
         <span className={BADGE_CLASS[status]}>{BADGE_LABEL[status]}</span>
       </div>

@@ -138,7 +138,7 @@ export default function EscrowPage() {
 
       <HoverCard className="card p-4">
         <div className="flex items-center justify-between mb-3">
-          <div className="text-[11px] font-medium text-[var(--text-secondary)]">Escrow Lifecycle</div>
+          <div className="text-[15px] font-medium text-[var(--text-secondary)]">Escrow Lifecycle</div>
           <div className="flex items-center gap-1.5">
             {escrowLoading ? (
               <span className="badge badge-idle">SYNC</span>
@@ -156,9 +156,9 @@ export default function EscrowPage() {
             <div key={step} className="flex items-center gap-1.5 flex-1">
               <div className={`flex items-center gap-1.5 p-2 rounded-lg border flex-1 ${i <= lifecycleStep ? "border-[var(--accent)]/20 bg-[var(--accent)]/5" : "border-[var(--border-default)]"}`}>
                 <PulseDot color={i <= lifecycleStep ? "var(--accent)" : "var(--text-muted)"} size={5} />
-                <span className={`text-[10px] ${i <= lifecycleStep ? "text-[var(--text-primary)]" : "text-[var(--text-tertiary)]"}`}>{step}</span>
+                <span className={`text-[14px] ${i <= lifecycleStep ? "text-[var(--text-primary)]" : "text-[var(--text-tertiary)]"}`}>{step}</span>
               </div>
-              {i < FLOW.length-1 && <span className="text-[var(--text-muted)] text-[11px]">→</span>}
+              {i < FLOW.length-1 && <span className="text-[var(--text-muted)] text-[15px]">→</span>}
             </div>
           ))}
         </div>
@@ -173,11 +173,11 @@ export default function EscrowPage() {
               return (
                 <div key={item.action} className="relative group">
                   <button onClick={()=>callEscrow(item.route,item.action)} disabled={disabled}
-                    className={`btn text-[11px] ${loading===item.action?"btn-secondary opacity-50":disabled?"btn-secondary opacity-30 cursor-not-allowed":"btn-secondary"}`}>
+                    className={`btn text-[15px] ${loading===item.action?"btn-secondary opacity-50":disabled?"btn-secondary opacity-30 cursor-not-allowed":"btn-secondary"}`}>
                     {loading===item.action ? <><span className="inline-block w-3 h-3 border-2 border-[var(--text-muted)] border-t-[var(--text-secondary)] rounded-full animate-spin" /> Processing</> : item.label}
                   </button>
                   {reason && (
-                    <div className="absolute z-10 bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[9px] text-[var(--text-tertiary)] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+                    <div className="absolute z-10 bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[13px] text-[var(--text-tertiary)] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
                       {reason}
                     </div>
                   )}
@@ -185,8 +185,8 @@ export default function EscrowPage() {
               );
             })}
           </div>
-          {escrowErr && !err && <div className="mt-3 rounded-lg bg-[var(--warning)]/10 px-2.5 py-1.5 text-[11px] text-[var(--warning)]">Could not read contract state. Actions may fail.</div>}
-          {err && <div className="mt-3 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[11px] text-[var(--danger)]">{err}</div>}
+          {escrowErr && !err && <div className="mt-3 rounded-lg bg-[var(--warning)]/10 px-2.5 py-1.5 text-[15px] text-[var(--warning)]">Could not read contract state. Actions may fail.</div>}
+          {err && <div className="mt-3 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[15px] text-[var(--danger)]">{err}</div>}
         </StatusCard>
 
         <StatusCard title="Contract State" status={escrowLoading?"loading":escrow?"ok":"error"} hint={escrow?`${escrow.amount} QIE`:escrowErr?escrowErr:"Unreachable"}>
@@ -200,8 +200,8 @@ export default function EscrowPage() {
               ["Latest", latest?.action??"—"],
             ].map(([l,v])=>(
               <div key={l} className="p-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
-                <div className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider">{l}</div>
-                <div className="font-mono text-[11px] text-[var(--text-primary)] mt-0.5">{v}</div>
+                <div className="text-[13px] text-[var(--text-tertiary)] uppercase tracking-wider">{l}</div>
+                <div className="font-mono text-[15px] text-[var(--text-primary)] mt-0.5">{v}</div>
               </div>
             ))}
           </div>
@@ -212,11 +212,11 @@ export default function EscrowPage() {
 
       <HoverCard className="card p-4">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-[11px] font-medium text-[var(--text-secondary)]">Transaction Activity</span>
-          {acts.length>0 && <span className="text-[10px] text-[var(--text-tertiary)] ml-auto">{confirmed} ok</span>}
+          <span className="text-[15px] font-medium text-[var(--text-secondary)]">Transaction Activity</span>
+          {acts.length>0 && <span className="text-[14px] text-[var(--text-tertiary)] ml-auto">{confirmed} ok</span>}
         </div>
         {acts.length===0 ? (
-          <div className="text-[11px] text-[var(--text-tertiary)] py-4 text-center">No transactions yet.</div>
+          <div className="text-[15px] text-[var(--text-tertiary)] py-4 text-center">No transactions yet.</div>
         ) : (
           <div className="flex flex-col gap-1.5">
             {acts.map((item, i) => (
@@ -225,13 +225,13 @@ export default function EscrowPage() {
                   <div className="flex items-center gap-2">
                     <PulseDot color={item.status==="confirmed"?"var(--success)":item.status==="failed"?"var(--danger)":"var(--warning)"} size={5} />
                     <div>
-                      <div className="text-[11px] text-[var(--text-secondary)]">{item.action.replace("_"," ")}</div>
-                      <div className="font-mono text-[10px] text-[var(--text-tertiary)]">{s(item.txHash)}</div>
+                      <div className="text-[15px] text-[var(--text-secondary)]">{item.action.replace("_"," ")}</div>
+                      <div className="font-mono text-[14px] text-[var(--text-tertiary)]">{s(item.txHash)}</div>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-0.5">
                     <span className={`badge ${item.status==="confirmed"?"badge-live":item.status==="failed"?"badge-error":"badge-warn"}`}>{item.status}</span>
-                    <span className="text-[9px] text-[var(--text-tertiary)]">{item.time}</span>
+                    <span className="text-[13px] text-[var(--text-tertiary)]">{item.time}</span>
                   </div>
                 </div>
               </SlideIn>

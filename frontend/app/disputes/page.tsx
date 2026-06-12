@@ -69,8 +69,8 @@ export default function DisputesPage() {
         <HoverCard className="card p-4">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Overview</div>
-              <div className="text-[11px] text-[var(--text-tertiary)]">Live disputes</div>
+              <div className="text-[15px] font-medium text-[var(--text-secondary)]">Overview</div>
+              <div className="text-[15px] text-[var(--text-tertiary)]">Live disputes</div>
             </div>
             <span className={`badge ${loading?"badge-idle":err?"badge-error":d.length>0?"badge-warn":"badge-idle"}`}>
               {loading?"SYNC":err?"ERROR":`${d.length} CASE${d.length!==1?'S':''}`}
@@ -79,15 +79,15 @@ export default function DisputesPage() {
           {loading ? (
             <div className="flex items-center justify-center py-8 text-[var(--text-tertiary)] text-sm">Loading...</div>
           ) : err ? (
-            <div className="rounded-lg bg-[var(--danger)]/10 px-3 py-2 text-[11px] text-[var(--danger)]">{err}<button onClick={fetchD} className="ml-2 underline">Retry</button></div>
+            <div className="rounded-lg bg-[var(--danger)]/10 px-3 py-2 text-[15px] text-[var(--danger)]">{err}<button onClick={fetchD} className="ml-2 underline">Retry</button></div>
           ) : d.length === 0 ? (
-            <div className="text-center py-8"><div className="text-3xl opacity-20 mb-2">⚖️</div><div className="text-[11px] text-[var(--text-tertiary)]">No disputes found</div></div>
+            <div className="text-center py-8"><div className="text-3xl opacity-20 mb-2">⚖️</div><div className="text-[15px] text-[var(--text-tertiary)]">No disputes found</div></div>
           ) : (
             <StaggerGrid className="grid grid-cols-2 gap-2" staggerDelay={0.03}>
               {[["Total",String(stats.total)],["Avg Confidence",avgPct!==null?`${avgPct}%`:"—"],["Buyer Wins",String(stats.byR.BUYER)],["Seller Wins",String(stats.byR.SELLER)],["Split",String(stats.byR.SPLIT)],["Last Sync",ls??"—"]].map(([l,v])=>(
                 <div key={l} className={`p-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)] ${l==="Avg Confidence"?"col-span-2":""}`}>
-                  <div className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider">{l}</div>
-                  <div className="font-mono text-[11px] text-[var(--text-primary)] mt-0.5" style={l==="Avg Confidence"&&avgPct!==null?{color:cc(stats.avg)}:{}}>{v}</div>
+                  <div className="text-[13px] text-[var(--text-tertiary)] uppercase tracking-wider">{l}</div>
+                  <div className="font-mono text-[15px] text-[var(--text-primary)] mt-0.5" style={l==="Avg Confidence"&&avgPct!==null?{color:cc(stats.avg)}:{}}>{v}</div>
                 </div>
               ))}
             </StaggerGrid>
@@ -97,8 +97,8 @@ export default function DisputesPage() {
         <HoverCard className="card p-4">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Recent Rulings</div>
-              <div className="text-[11px] text-[var(--text-tertiary)]">AI arbitration results</div>
+              <div className="text-[15px] font-medium text-[var(--text-secondary)]">Recent Rulings</div>
+              <div className="text-[15px] text-[var(--text-tertiary)]">AI arbitration results</div>
             </div>
             <PulseDot color={d.length?"var(--success)":"var(--text-muted)"} size={7} />
           </div>
@@ -110,21 +110,21 @@ export default function DisputesPage() {
                   <SlideIn key={x.dealId} delay={i * 0.03}>
                     <div className="p-2.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-mono text-[10px] text-[var(--text-secondary)]">{x.dealId}</span>
+                        <span className="font-mono text-[14px] text-[var(--text-secondary)]">{x.dealId}</span>
                         <span className={`badge ${x.status==="resolved"?"badge-live":x.status==="disputed"?"badge-warn":"badge-idle"}`}>{x.status}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <PulseDot color={cc(x.disputeConfidence)} size={5} />
-                        <span className="text-[11px] font-medium" style={{color:cc(x.disputeConfidence)}}>{x.disputeRuling??"PENDING"}</span>
-                        <span className="text-[9px] text-[var(--text-tertiary)] ml-auto">{ts(x.resolvedAt)}</span>
+                        <span className="text-[15px] font-medium" style={{color:cc(x.disputeConfidence)}}>{x.disputeRuling??"PENDING"}</span>
+                        <span className="text-[13px] text-[var(--text-tertiary)] ml-auto">{ts(x.resolvedAt)}</span>
                       </div>
-                      {x.disputeReasoning && <div className="text-[10px] text-[var(--text-tertiary)] mt-1 leading-relaxed line-clamp-2">{x.disputeReasoning}</div>}
+                      {x.disputeReasoning && <div className="text-[14px] text-[var(--text-tertiary)] mt-1 leading-relaxed line-clamp-2">{x.disputeReasoning}</div>}
                     </div>
                   </SlideIn>
                 );
               })}
             </div>
-          ) : <div className="text-center py-8"><div className="text-3xl opacity-20 mb-2">📋</div><div className="text-[11px] text-[var(--text-tertiary)]">No records</div></div>}
+          ) : <div className="text-center py-8"><div className="text-3xl opacity-20 mb-2">📋</div><div className="text-[15px] text-[var(--text-tertiary)]">No records</div></div>}
         </HoverCard>
       </div>
 
@@ -134,31 +134,31 @@ export default function DisputesPage() {
         <HoverCard className="card p-4">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Ruling Reasoning</div>
-              <div className="text-[11px] text-[var(--text-tertiary)]">Latest AI analysis</div>
+              <div className="text-[15px] font-medium text-[var(--text-secondary)]">Ruling Reasoning</div>
+              <div className="text-[15px] text-[var(--text-tertiary)]">Latest AI analysis</div>
             </div>
             <span className={`badge ${latest?"badge-live":loading?"badge-idle":"badge-idle"}`}>{latest?"AVAILABLE":"NONE"}</span>
           </div>
           {latest ? (
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="font-mono text-[11px] text-[var(--text-secondary)]">{latest.dealId}</span>
-                <span className="text-[11px] font-medium" style={{color:cc(latest.disputeConfidence)}}>→ {latest.disputeRuling}</span>
-                {latest.disputeConfidence!==null && <span className="text-[10px] text-[var(--text-tertiary)]">({Math.round(latest.disputeConfidence*100)}%)</span>}
+                <span className="font-mono text-[15px] text-[var(--text-secondary)]">{latest.dealId}</span>
+                <span className="text-[15px] font-medium" style={{color:cc(latest.disputeConfidence)}}>→ {latest.disputeRuling}</span>
+                {latest.disputeConfidence!==null && <span className="text-[14px] text-[var(--text-tertiary)]">({Math.round(latest.disputeConfidence*100)}%)</span>}
               </div>
               <div className="p-3 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
-                <div className="text-[12px] text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">{latest.disputeReasoning}</div>
+                <div className="text-[14px] text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">{latest.disputeReasoning}</div>
               </div>
-              <div className="text-[10px] text-[var(--text-tertiary)] mt-2">Resolved: {ts(latest.resolvedAt)}</div>
+              <div className="text-[14px] text-[var(--text-tertiary)] mt-2">Resolved: {ts(latest.resolvedAt)}</div>
             </div>
-          ) : <div className="text-center py-8"><div className="text-3xl opacity-20 mb-2">💭</div><div className="text-[11px] text-[var(--text-tertiary)]">No reasoning available</div></div>}
+          ) : <div className="text-center py-8"><div className="text-3xl opacity-20 mb-2">💭</div><div className="text-[15px] text-[var(--text-tertiary)]">No reasoning available</div></div>}
         </HoverCard>
 
         <HoverCard className="card p-4">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Resolution Summary</div>
-              <div className="text-[11px] text-[var(--text-tertiary)]">Rulings breakdown</div>
+              <div className="text-[15px] font-medium text-[var(--text-secondary)]">Resolution Summary</div>
+              <div className="text-[15px] text-[var(--text-tertiary)]">Rulings breakdown</div>
             </div>
             <span className={`badge ${stats.totalRulings>0?"badge-live":"badge-idle"}`}>{stats.totalRulings} RULING{stats.totalRulings!==1?'S':''}</span>
           </div>
@@ -173,8 +173,8 @@ export default function DisputesPage() {
                 return (
                   <div key={item.label} className="p-2.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[11px] text-[var(--text-tertiary)]">{item.label}</span>
-                      <span className="font-mono text-[11px] text-[var(--text-secondary)]">{item.v} <span className="text-[var(--text-muted)]">({pct}%)</span></span>
+                      <span className="text-[15px] text-[var(--text-tertiary)]">{item.label}</span>
+                      <span className="font-mono text-[15px] text-[var(--text-secondary)]">{item.v} <span className="text-[var(--text-muted)]">({pct}%)</span></span>
                     </div>
                     <div className="h-1.5 rounded-full bg-[var(--border-subtle)] overflow-hidden">
                       <div className={`h-full rounded-full ${item.bar}`} style={{width:`${pct}%`, transition:"width 0.8s ease"}} />
@@ -183,7 +183,7 @@ export default function DisputesPage() {
                 );
               })}
             </div>
-          ) : <div className="text-center py-8"><div className="text-3xl opacity-20 mb-2">📊</div><div className="text-[11px] text-[var(--text-tertiary)]">No rulings yet</div></div>}
+          ) : <div className="text-center py-8"><div className="text-3xl opacity-20 mb-2">📊</div><div className="text-[15px] text-[var(--text-tertiary)]">No rulings yet</div></div>}
         </HoverCard>
       </div>
     </div>

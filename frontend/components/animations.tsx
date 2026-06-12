@@ -184,7 +184,7 @@ export function MiniDonut({ value, max = 100, size = 32, strokeWidth = 3, color 
           style={{ transition: "stroke-dashoffset 0.8s ease" }}
         />
       </svg>
-      {label && <span className="absolute text-[8px] font-medium text-white/50">{label}</span>}
+      {label && <span className="absolute text-[13px] font-medium text-white/50">{label}</span>}
     </div>
   );
 }
@@ -201,12 +201,12 @@ export function MetricTile({ label, value, subtitle, color = "#5b5bd7" }: Metric
     <div className="card p-4">
       <div className="flex items-center gap-2 mb-1.5">
         <PulseDot color={color} size={6} animating={false} />
-        <span className="text-[10px] font-medium text-[var(--text-secondary)]">{label}</span>
+        <span className="text-[14px] font-medium text-[var(--text-secondary)]">{label}</span>
       </div>
       <div className="text-lg font-semibold tracking-tight" style={{ color: value !== "—" ? "var(--text-primary)" : "var(--text-tertiary)" }}>
         {typeof value === "number" ? <AnimatedCounter value={value} /> : value}
       </div>
-      {subtitle && <div className="text-[10px] text-[var(--text-tertiary)] mt-0.5">{subtitle}</div>}
+      {subtitle && <div className="text-[14px] text-[var(--text-tertiary)] mt-0.5">{subtitle}</div>}
     </div>
   );
 }

@@ -61,26 +61,26 @@ export default function TelegramPage() {
         <HoverCard className="card p-4">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Telemetry Feed</div>
-              <div className="text-[11px] text-[var(--text-tertiary)]">Live webhook signal</div>
+              <div className="text-[15px] font-medium text-[var(--text-secondary)]">Telemetry Feed</div>
+              <div className="text-[15px] text-[var(--text-tertiary)]">Live webhook signal</div>
             </div>
             <PulseDot color={t?"var(--success)":"var(--text-muted)"} size={7} />
           </div>
           <div className="space-y-2">
             {[["Command",t?.lastCommand??"—"],["User",t?.lastUser??"—"],["Message",t?.lastMessage?`${t.lastMessage.slice(0,22)}${t.lastMessage.length>22?"...":""}`:"—"],["Timestamp",ts(t?.lastTimestamp)]].map(([l,v])=>(
               <div key={l} className="flex justify-between py-1.5 border-b border-[var(--border-subtle)] last:border-0">
-                <span className="text-[11px] text-[var(--text-tertiary)]">{l}</span>
-                <span className="font-mono text-[11px] text-[var(--text-secondary)] truncate max-w-[200px]">{v}</span>
+                <span className="text-[15px] text-[var(--text-tertiary)]">{l}</span>
+                <span className="font-mono text-[15px] text-[var(--text-secondary)] truncate max-w-[200px]">{v}</span>
               </div>
             ))}
           </div>
-          {err && <div className="mt-2 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[11px] text-[var(--danger)]">{err}</div>}
+          {err && <div className="mt-2 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[15px] text-[var(--danger)]">{err}</div>}
         </HoverCard>
 
         <HoverCard className="card p-4">
           <div className="mb-3">
-            <div className="text-[11px] font-medium text-[var(--text-secondary)]">Connectivity</div>
-            <div className="text-[11px] text-[var(--text-tertiary)]">Connection checks</div>
+            <div className="text-[15px] font-medium text-[var(--text-secondary)]">Connectivity</div>
+            <div className="text-[15px] text-[var(--text-tertiary)]">Connection checks</div>
           </div>
           <div className="flex flex-col gap-2">
             {[
@@ -89,8 +89,8 @@ export default function TelegramPage() {
               {label:"Health", value:t?"Streaming":"Idle", ok:!!t},
             ].map(({label, value, ok}) => (
               <div key={label} className="flex items-center justify-between p-2.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
-                <span className="text-[11px] text-[var(--text-tertiary)]">{label}</span>
-                <span className={`flex items-center gap-1.5 text-[11px] ${ok?"text-[var(--success)]":"text-[var(--warning)]"}`}>
+                <span className="text-[15px] text-[var(--text-tertiary)]">{label}</span>
+                <span className={`flex items-center gap-1.5 text-[15px] ${ok?"text-[var(--success)]":"text-[var(--warning)]"}`}>
                   <PulseDot color={ok?"var(--success)":"var(--warning)"} size={6} />
                   {loading?"CHECKING":value}
                 </span>
@@ -100,8 +100,8 @@ export default function TelegramPage() {
           <div className="mt-3 pt-3 border-t border-[var(--border-subtle)] flex items-center gap-3">
             <MiniDonut value={t?.totalMessages?Math.min(t.totalMessages,100):0} max={100} size={30} strokeWidth={2.5} color="#22c55e" label={String(t?.totalMessages??0)} />
             <div>
-              <div className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider">Activity Level</div>
-              <div className="text-[11px] text-[var(--text-secondary)]">{t?.totalMessages?`${t.totalMessages} messages`:"No activity"}</div>
+              <div className="text-[13px] text-[var(--text-tertiary)] uppercase tracking-wider">Activity Level</div>
+              <div className="text-[15px] text-[var(--text-secondary)]">{t?.totalMessages?`${t.totalMessages} messages`:"No activity"}</div>
             </div>
           </div>
         </HoverCard>
@@ -111,10 +111,10 @@ export default function TelegramPage() {
 
       <HoverCard className="card p-4">
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-[11px] font-medium text-[var(--text-secondary)]">Activity Feed</span>
+          <span className="text-[15px] font-medium text-[var(--text-secondary)]">Activity Feed</span>
           {t && <PulseDot color="var(--accent)" size={6} />}
         </div>
-        <div className="text-[11px] text-[var(--text-tertiary)] mb-4">{t?"Live telemetry captured.":"Awaiting live events."}</div>
+        <div className="text-[15px] text-[var(--text-tertiary)] mb-4">{t?"Live telemetry captured.":"Awaiting live events."}</div>
         <div className="flex items-end gap-2 h-20">
           {activity.map((d) => (
             <div key={d.l} className="flex-1 flex flex-col items-center gap-1">

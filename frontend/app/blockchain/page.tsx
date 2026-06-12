@@ -62,35 +62,35 @@ export default function BlockchainPage() {
         <HoverCard className="card p-4">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Network Runtime</div>
-              <div className="text-[11px] text-[var(--text-tertiary)]">RPC + chain metadata</div>
+              <div className="text-[15px] font-medium text-[var(--text-secondary)]">Network Runtime</div>
+              <div className="text-[15px] text-[var(--text-tertiary)]">RPC + chain metadata</div>
             </div>
             <PulseDot color={h?.success?"var(--success)":"var(--warning)"} size={7} />
           </div>
           <div className="space-y-2">
             {[["Chain ID",String(h?.chainId??"—")],["Block Height",String(h?.blockNumber??"—")],["Last Sync",ls??"—"]].map(([l,v])=>(
               <div key={l} className="flex justify-between py-1.5 border-b border-[var(--border-subtle)] last:border-0">
-                <span className="text-[11px] text-[var(--text-tertiary)]">{l}</span>
-                <span className="font-mono text-[11px] text-[var(--text-secondary)]">{v}</span>
+                <span className="text-[15px] text-[var(--text-tertiary)]">{l}</span>
+                <span className="font-mono text-[15px] text-[var(--text-secondary)]">{v}</span>
               </div>
             ))}
           </div>
-          {err && <div className="mt-2 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[11px] text-[var(--danger)]">{err}</div>}
+          {err && <div className="mt-2 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[15px] text-[var(--danger)]">{err}</div>}
         </HoverCard>
 
         <HoverCard className="card p-4">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Contract State</div>
-              <div className="text-[11px] text-[var(--text-tertiary)]">Escrow deployment</div>
+              <div className="text-[15px] font-medium text-[var(--text-secondary)]">Contract State</div>
+              <div className="text-[15px] text-[var(--text-tertiary)]">Escrow deployment</div>
             </div>
             <span className={`badge ${badge==="LIVE"?"badge-live":badge==="UNDER REVIEW"?"badge-warn":"badge-accent"}`}>{loading?"SYNC":badge}</span>
           </div>
           <div className="space-y-2">
             {[["Address",s(CONTRACT)],["Buyer",s(e?.buyer)],["Seller",s(e?.seller)],["Amount",e?.amount??"—"]].map(([l,v])=>(
               <div key={l} className="flex justify-between py-1.5 border-b border-[var(--border-subtle)] last:border-0">
-                <span className="text-[11px] text-[var(--text-tertiary)]">{l}</span>
-                <span className="font-mono text-[11px] text-[var(--text-secondary)]">{v}</span>
+                <span className="text-[15px] text-[var(--text-tertiary)]">{l}</span>
+                <span className="font-mono text-[15px] text-[var(--text-secondary)]">{v}</span>
               </div>
             ))}
           </div>
@@ -103,8 +103,8 @@ export default function BlockchainPage() {
         <div className="card p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Activity Timeline</div>
-              <div className="text-[11px] text-[var(--text-tertiary)]">Chronological events</div>
+              <div className="text-[15px] font-medium text-[var(--text-secondary)]">Activity Timeline</div>
+              <div className="text-[15px] text-[var(--text-tertiary)]">Chronological events</div>
             </div>
             <PulseDot color="var(--accent)" size={7} />
           </div>

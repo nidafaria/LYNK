@@ -25,8 +25,8 @@ const CTooltip = ({ a, p, l }: any) => {
   if (!a || !p?.length) return null;
   return (
     <div className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-3 py-2 text-xs shadow-lg">
-      <div className="text-[10px] text-[var(--text-tertiary)] mb-1">{l}</div>
-      {p.map((x: any, i: number) => <div key={i} className="font-mono text-[11px]" style={{color: x.color}}>{x.name}: {x.value}</div>)}
+      <div className="text-[14px] text-[var(--text-tertiary)] mb-1">{l}</div>
+      {p.map((x: any, i: number) => <div key={i} className="font-mono text-[15px]" style={{color: x.color}}>{x.name}: {x.value}</div>)}
     </div>
   );
 };
@@ -89,8 +89,8 @@ export default function Home() {
         <HoverCard className="card p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Block Activity</div>
-              <div className="text-[11px] text-[var(--text-tertiary)]">Blocks & transactions (24h)</div>
+              <div className="text-[15px] font-medium text-[var(--text-secondary)]">Block Activity</div>
+              <div className="text-[15px] text-[var(--text-tertiary)]">Blocks & transactions (24h)</div>
             </div>
             <PulseDot color="var(--accent)" size={7} />
           </div>
@@ -104,8 +104,8 @@ export default function Home() {
                       <stop offset="100%" stopColor="#5b5bd7" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="t" axisLine={false} tickLine={false} tick={{fill:"rgba(255,255,255,0.15)",fontSize:9}} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill:"rgba(255,255,255,0.15)",fontSize:9}} />
+                  <XAxis dataKey="t" axisLine={false} tickLine={false} tick={{fill:"rgba(255,255,255,0.15)",fontSize:11}} />
+                  <YAxis axisLine={false} tickLine={false} tick={{fill:"rgba(255,255,255,0.15)",fontSize:11}} />
                   <Tooltip content={<CTooltip />} />
                   <Area type="monotone" dataKey="blocks" stroke="#5b5bd7" strokeWidth={1.5} fill="url(#bg)" name="Blocks" />
                 </AreaChart>
@@ -117,15 +117,15 @@ export default function Home() {
         <HoverCard className="card p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="text-[11px] font-medium text-[var(--text-secondary)]">Escrow Operations</div>
-              <div className="text-[11px] text-[var(--text-tertiary)]">Quick actions</div>
+              <div className="text-[15px] font-medium text-[var(--text-secondary)]">Escrow Operations</div>
+              <div className="text-[15px] text-[var(--text-tertiary)]">Quick actions</div>
             </div>
             <span className="badge badge-live">ACTIVE</span>
           </div>
           <StaggerGrid className="grid grid-cols-2 gap-2" staggerDelay={0.03}>
             {[["Amount", e?.amount ?? "—"], ["Lifecycle", ec.l], ["Released", ec.r], ["Disputed", ec.d]].map(([l, v]) => (
               <div key={l} className="p-2.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
-                <div className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider">{l}</div>
+                <div className="text-[13px] text-[var(--text-tertiary)] uppercase tracking-wider">{l}</div>
                 <div className="font-mono text-sm text-[var(--text-primary)] mt-0.5">{v}</div>
               </div>
             ))}
@@ -137,13 +137,13 @@ export default function Home() {
 
       <StaggerGrid className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3" staggerDelay={0.03}>
         <StatusCard title="Backend" status={hl?"loading":h?.success?"ok":"error"} hint={hl?"Connecting...":h?.success?"Connected":"Failed"}>
-          <div className="flex justify-between py-0.5"><span className="text-[10px] text-[var(--text-tertiary)]">Endpoint</span><span className="font-mono text-[10px] text-[var(--text-secondary)]">/api/health</span></div>
-          {he && <div className="mt-2 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[10px] text-[var(--danger)]">{he}</div>}
+          <div className="flex justify-between py-0.5"><span className="text-[14px] text-[var(--text-tertiary)]">Endpoint</span><span className="font-mono text-[14px] text-[var(--text-secondary)]">/api/health</span></div>
+          {he && <div className="mt-2 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[14px] text-[var(--danger)]">{he}</div>}
         </StatusCard>
         <StatusCard title="Blockchain" status={hl?"loading":h?.success?"ok":"warn"} hint="QIE network" />
         <StatusCard title="Wallet" status={hl?"loading":h?.success?"ok":"warn"} hint="Signer status" />
         <StatusCard title="Contract" status={el?"loading":e?"ok":"error"} hint="LynkEscrow">
-          {ee && <div className="mt-2 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[10px] text-[var(--danger)]">{ee}</div>}
+          {ee && <div className="mt-2 rounded-lg bg-[var(--danger)]/10 px-2.5 py-1.5 text-[14px] text-[var(--danger)]">{ee}</div>}
         </StatusCard>
       </StaggerGrid>
     </div>

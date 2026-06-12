@@ -56,20 +56,16 @@ export default function ConsoleShell({ children }: { children: React.ReactNode }
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          {/* Logo */}
-          <motion.div
-            className="flex items-center gap-2.5 px-1"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.15 }}
-          >
-            <div className="w-7 h-7 rounded-lg bg-[var(--accent)] flex items-center justify-center">
-              <span className="text-white text-xs font-bold">L</span>
+          {/* LOGO */}
+          <div className="relative inline-block">
+            <div className="text-2xl font-bold tracking-tight">
+              <span className="text-white">L</span>
+              <span className="mx-0.5 text-[#818cf8]">Y</span>
+              <span className="text-white">N</span>
+              <span className="text-white">K</span>
             </div>
-            <div>
-              <div className="text-sm font-semibold text-[var(--text-primary)]">LYNK</div>
-              <div className="text-[9px] text-[var(--text-tertiary)]">Protocol v0.1</div>
-            </div>
-          </motion.div>
+            <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-transparent rounded-full" />
+          </div>
 
           <div className="divider" />
 
@@ -91,7 +87,7 @@ export default function ConsoleShell({ children }: { children: React.ReactNode }
           <div className="divider" />
           <div className="flex items-center gap-2 px-1 py-1">
             <PulseDot color="var(--success)" size={8} />
-            <span className="text-[10px] text-[var(--text-tertiary)]">All systems nominal</span>
+            <span className="text-[14px] text-[var(--text-tertiary)]">All systems nominal</span>
           </div>
         </motion.div>
       </aside>
@@ -102,7 +98,7 @@ export default function ConsoleShell({ children }: { children: React.ReactNode }
         <header className="border-b border-[var(--border-default)] bg-[var(--bg-base)] px-6 py-3">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[9px] text-[var(--text-tertiary)] tracking-wider uppercase">LYNK Protocol</div>
+              <div className="text-[11px] text-[var(--text-tertiary)] tracking-wider uppercase">LYNK Protocol</div>
               <h1 className="text-lg font-semibold text-[var(--text-primary)] mt-0.5">Mission Control</h1>
             </div>
             <div className="flex items-center gap-2">

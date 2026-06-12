@@ -73,16 +73,16 @@ export default function DeveloperPage() {
               {deals.map((d, i) => (
                 <SlideIn key={d.dealId} delay={i * 0.03}>
                   <div className="flex items-center justify-between p-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:bg-[var(--bg-hover)] transition-colors">
-                    <span className="font-mono text-[11px] text-[var(--text-secondary)]">{d.dealId.slice(-10)}</span>
+                    <span className="font-mono text-[15px] text-[var(--text-secondary)]">{d.dealId.slice(-10)}</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[11px] text-[var(--text-primary)]">{d.amount} QIE</span>
+                      <span className="font-mono text-[15px] text-[var(--text-primary)]">{d.amount} QIE</span>
                       <span className={`badge ${d.status==="completed"||d.status==="resolved"?"badge-live":d.status==="disputed"?"badge-warn":"badge-idle"}`}>{d.status}</span>
                     </div>
                   </div>
                 </SlideIn>
               ))}
             </div>
-          ) : <div className="text-[11px] text-[var(--text-tertiary)] py-4 text-center">No deals yet</div>}
+          ) : <div className="text-[15px] text-[var(--text-tertiary)] py-4 text-center">No deals yet</div>}
         </StatusCard>
 
         <StatusCard title="Recent Disputes" status={loading?"loading":disputes.length>0?"ok":"idle"} hint={`${disputes.length} case${disputes.length!==1?'s':''}`}>
@@ -91,10 +91,10 @@ export default function DeveloperPage() {
               {disputes.map((d, i) => (
                 <SlideIn key={d.dealId} delay={i * 0.03}>
                   <div className="flex items-center justify-between p-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:bg-[var(--bg-hover)] transition-colors">
-                    <span className="font-mono text-[11px] text-[var(--text-secondary)]">{d.dealId.slice(-10)}</span>
+                    <span className="font-mono text-[15px] text-[var(--text-secondary)]">{d.dealId.slice(-10)}</span>
                     <div className="flex items-center gap-2">
                       <PulseDot color={d.disputeConfidence&&d.disputeConfidence>=0.8?"var(--success)":d.disputeConfidence&&d.disputeConfidence>=0.5?"var(--warning)":"var(--text-muted)"} size={5} />
-                      <span className="text-[11px] font-medium" style={{color: d.disputeConfidence&&d.disputeConfidence>=0.8?"var(--success)":d.disputeConfidence&&d.disputeConfidence>=0.5?"var(--warning)":"var(--text-muted)"}}>
+                      <span className="text-[15px] font-medium" style={{color: d.disputeConfidence&&d.disputeConfidence>=0.8?"var(--success)":d.disputeConfidence&&d.disputeConfidence>=0.5?"var(--warning)":"var(--text-muted)"}}>
                         {d.disputeRuling??"PENDING"}
                       </span>
                       <span className="badge badge-idle">{Math.round((d.disputeConfidence??0)*100)}%</span>
@@ -103,7 +103,7 @@ export default function DeveloperPage() {
                 </SlideIn>
               ))}
             </div>
-          ) : <div className="text-[11px] text-[var(--text-tertiary)] py-4 text-center">No disputes</div>}
+          ) : <div className="text-[15px] text-[var(--text-tertiary)] py-4 text-center">No disputes</div>}
         </StatusCard>
       </div>
 
@@ -119,8 +119,8 @@ export default function DeveloperPage() {
               {label:"Database", ok:dbOk, detail:dbOk?"Connected":"Unknown"},
             ].map(({label, ok, detail}) => (
               <div key={label} className="flex items-center justify-between p-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
-                <span className="text-[11px] text-[var(--text-tertiary)]">{label}</span>
-                <span className={`flex items-center gap-1.5 text-[11px] ${ok?"text-[var(--success)]":"text-[var(--danger)]"}`}>
+                <span className="text-[15px] text-[var(--text-tertiary)]">{label}</span>
+                <span className={`flex items-center gap-1.5 text-[15px] ${ok?"text-[var(--success)]":"text-[var(--danger)]"}`}>
                   <PulseDot color={ok?"var(--success)":"var(--danger)"} size={6} />
                   {detail}
                 </span>
