@@ -17,7 +17,7 @@
 </div>
 
 ---
-
+Try it out: https://t.me/jessy_lynk_bot
 > Secure peer-to-peer transactions directly inside Telegram with AI-powered dispute arbitration and on-chain settlement.
 
 LYNK eliminates trust issues in Telegram-based commerce by combining smart contract escrow, automated AI arbitration, and seamless chat-based interactions. Users can create and manage escrow agreements without leaving Telegram, while disputes are resolved instantly through AI analysis and executed transparently on-chain.
