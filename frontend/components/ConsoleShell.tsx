@@ -96,11 +96,27 @@ export default function ConsoleShell({ children }: { children: React.ReactNode }
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
         <header className="border-b border-[var(--border-default)] bg-[var(--bg-base)] px-6 py-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-y-3">
             <div>
               <div className="text-[11px] text-[var(--text-tertiary)] tracking-wider uppercase">LYNK Protocol</div>
               <h1 className="text-lg font-semibold text-[var(--text-primary)] mt-0.5">Mission Control</h1>
             </div>
+
+            {/* Telegram CTA */}
+            <div className="flex flex-col items-center">
+              <a
+                href="https://t.me/jessy_lynk_bot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-400/20 bg-amber-400/5 backdrop-blur-sm text-amber-400 hover:bg-amber-400/10 hover:border-amber-400/30 transition-all duration-200 text-sm font-medium whitespace-nowrap"
+              >
+                 Try the Telegram Bot
+              </a>
+              <span className="text-[12px] text-[var(--text-tertiary)] mt-1 whitespace-nowrap">
+                Experience LYNK directly inside Telegram.
+              </span>
+            </div>
+
             <div className="flex items-center gap-2">
               <span className="badge badge-accent">QIE</span>
               <motion.span
